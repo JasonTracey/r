@@ -14,9 +14,9 @@
 
 int main () {
     //
-    Location home = new Location(name='Home')
-    Location forest = new Location(name='Forest')
-    Species human = new Species(name='Human')
-    Unit jason = new Unit()
-    jason->go_to(forest)
+    Location home("Home");
+    Location forest("Forest");
+    Species human("Human");
+    Unit suse("Susannah", &human, &home);
+    suse.go_to(&forest);
 }

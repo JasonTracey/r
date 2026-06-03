@@ -7,13 +7,17 @@ class Location;
 
 class Species {
     public:
-        std::string name;
+        Species(std::string name);
+
+        std::string name() {return name_;};
+    private:
+        std::string name_;
 };
 
 class Unit {
     public:
         // Constructors
-        Unit(std::string name, Location* location, Species* species);
+        Unit(std::string name, Species* species, Location* location);
 
         // Destructor
         ~Unit() = default;

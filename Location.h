@@ -6,12 +6,20 @@
 class Unit;
 class Location {    
     public:
-        std::string name;
+        // Constructors
+        Location(std::string name);
 
+        // Destructor
+        ~Location() = default;
+
+        // Methods
         void enter(Unit* unit);
         void exit(Unit* unit);
-        void print_name();
+        
+        std::string name() {return name_;};
+        std::unordered_set<Unit*> units() {return units_;};
     private:
-        std::unordered_set<Unit*> units;
+        std::string name_;
+        std::unordered_set<Unit*> units_;
 };
 
