@@ -1,6 +1,7 @@
 
 #include <unordered_set>
 #include <string>
+#include <iostream>
 #include "Location.h"
 #include "Unit.h"
 
@@ -18,5 +19,11 @@ int main () {
     Location forest("Forest");
     Species human("Human");
     Unit suse("Susannah", &human, &home);
+    
+    std::cout << suse.name() << " is at " << suse.location()->name() << '\n';
+    
     suse.go_to(&forest);
+    std::cout << suse.name() << " goes to " << forest.name() << '\n';
+    std::cout << suse.name() << " is at " << suse.location()->name() << '\n';
+    
 }
