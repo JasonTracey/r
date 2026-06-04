@@ -1,11 +1,14 @@
-game: game.o Unit.o Location.o
-	g++ game.o Unit.o Location.o -o game
+CXX = g++
+CXXFLAGS = -I include
 
-game.o: game.cpp Unit.h Location.h
-	g++ -c game.cpp -o game.o
+SRC = src/game.cpp src/Unit.cpp src/Location.cpp
+OBJ = $(SRC:src/%.cpp=build/%.o)
 
-Location.o: Location.cpp Unit.h Location.h
-	g++ -c Location.cpp -o Location.o
+game: $(OBJ)
+	$(CXX) $(OBJ) -o game
 
-Unit.o: Unit.cpp Unit.h Location.h
-	g++ -c Unit.cpp -o Unit.o
+build/%.o: src/%.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+clean:
+	rm -f build/*.o game.exe
