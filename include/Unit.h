@@ -2,17 +2,8 @@
 
 #include <string>
 
-
+class Species;
 class Location;
-
-class Species {
-    public:
-        Species(std::string name);
-
-        std::string name() {return name_;};
-    private:
-        std::string name_;
-};
 
 class Unit {
     public:
@@ -23,9 +14,9 @@ class Unit {
         ~Unit() = default;
 
         // Methods
-        Species* species() const {return species_;};
-        Location* location() const {return location_;};
-        std::string name() const {return name_;};
+        Species* species() const {return species_;}
+        Location* location() const {return location_;}
+        std::string name() const {return name_;}
 
         void go_to(Location* l);
 

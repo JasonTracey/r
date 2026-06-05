@@ -1,7 +1,7 @@
 CXX = g++
 CXXFLAGS = -I include
 
-SRC = src/game.cpp src/Unit.cpp src/Location.cpp
+SRC = src/game.cpp src/Unit.cpp src/Location.cpp src/Resource.cpp src/Species.cpp
 OBJ = $(SRC:src/%.cpp=build/%.o)
 
 game: $(OBJ)
