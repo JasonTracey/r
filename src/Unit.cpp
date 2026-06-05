@@ -9,9 +9,15 @@ Unit::Unit(std::string name, Species* species, Location* location)
     go_to(location);
 }
 
-// 
+// Methods 
 void Unit::go_to(Location* location) {
     if (location_) location_->exit(this);
     location_ = location;
     location_->enter(this);
+}
+void Unit::harvest(Resource* r) {
+    
+}
+void Unit::deposit(Resource* r) {
+
 }
