@@ -1,4 +1,5 @@
 #include <numeric>
+#include <algorithm>
 #include "Stockpile.h"
 
 

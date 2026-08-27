@@ -1,5 +1,12 @@
 .claude/
 notes/
 inspo/
+
+# Build output
+build/
 *.o
+*.d
 *.exe
+
+# Generated editor/tooling files
+compile_commands.json

@@ -21,3 +21,14 @@ void Unit::harvest(Resource* r) {
 void Unit::deposit(Resource* r) {
 
 }
+
+move
+
+a_supp = 3
+b_supp = 199
+amnt = 6
+a.remove(amnt)
+//a supp -> 0, ret 3
+b.add(amnt-a.remove)
+//b supp -> 1, ret 2
+a.add(berries, b.add(berries, amnt-a.remove(berriesm amnt)))

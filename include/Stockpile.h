@@ -29,8 +29,16 @@ class Stockpile {
         
         // Adds resource to stockpile, returns overflow else 0
         unsigned int add(Resource* resource, unsigned int amount);
-        // Removes resource from a stockpile, returns successfully removed
+        // Removes resource from a stockpile, returns overflow
         unsigned int remove(Resource* resource, unsigned int amount);
+        // Gives to a stockpile
+        unsigned int transfer_to(
+            Resource* resource, unsigned int amount, Stockpile* target
+        );
+        // Takes from a stockpile
+        unsigned int transfer_from(
+            Resource* resource, unsigned int amount, Stockpile* target
+        );
         // consider whitelist blacklist for resources
     private:
         Contents contents_;
