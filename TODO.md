@@ -2,36 +2,77 @@
 
 Ordered by dependency — each item unblocks the ones under it.
 
-## 1. Finish the mutation path
-- [x] `WorldMapNode::set_terrain(Terrain)` — the non-const `node_at` exists, but the
-      node still has no setter, so nothing can actually write terrain.
+## Done
 
-## 2. Expose map dimensions
+- [x] `WorldMapNode::set_terrain(Terrain)` — the write path into a tile.
 - [x] `WorldMap::width()` / `height()` accessors.
-      The renderer and generator both need to loop over the grid, and neither can
-      without these. Trivial const getters in the header.
+- [x] `render(const WorldMap&, std::ostream&)` — glyphs, row by row.
+- [x] `generate(WorldMap&, unsigned seed)` — white noise. Proved the pipeline.
+- [x] Value noise: `Lattice` (coarse grid + bilinear sampling), `generate_value`.
+      Verified: same seed gives the same map; spacing=1 degenerates to white noise.
 
-## 3. Renderer  (do this BEFORE generation)
-- [x] `render(const WorldMap&)` in its own file, printing `info(node.terrain()).glyph`
-      row by row to stdout.
-- [x] Add `src/Render.cpp` to `SRC` in the Makefile.
-      Rationale: generation written blind is guesswork. Once the map is visible,
-      every later change verifies itself by eye.
+---
 
-## 4. Generation — step 1: random
-- [x] `generate(WorldMap&, unsigned seed)` in its own file, terrain picked per tile.
-- [x] Use `<random>` (`std::mt19937` + `std::uniform_int_distribution`), not `rand()`.
-- [x] Add `src/WorldGen.cpp` to `SRC`.
-      This will look like TV static. That's fine — its job is proving the
-      write path and renderer work end to end.
+## 1. Lattice tidy-up (small, do first)
 
-## 5. Generation — step 2: coherent noise
-- [ ] Value noise or Perlin/simplex over the grid.
-- [ ] Threshold the noise field into terrain bands (low -> water, mid -> grass, high -> soil).
-      Static looks wrong because real terrain is spatially correlated; noise is what
-      makes neighbours resemble each other.
+- [x] `#include <array>` in `Lattice.h` — it declares `std::array` but only gets it
+      by accident, via `<vector>`.
+- [x] `WorldMap.h` -> forward declaration `class WorldMap;` in the header.
+      Only `WorldMap&` is used, so the full definition isn't needed.
+- [x] Delete dead code: `UnitCornerValues` struct, `#include <iostream>`,
+      `#include "Terrain.h"`, stray `;` at the top of the constructor body.
+- [ ] Fold `world_to_lattice` + `world_to_lattice_subgrid` into one `locate()`
+      returning cell + fraction. `get_lattice_corners` then takes the cell.
+      Reason: world->lattice mapping is currently defined in two places that must
+      agree. One definition, and `PointF` disappears.
+
+## 2. Height map as a first-class thing
+
+Right now noise maps straight to terrain. Split those: generate a height field,
+then decide terrain from it (plus whatever else) as a separate step.
+
+- [ ] **Decide where height lives.** Two options, and this blocks everything below:
+      - a `float height_` on `WorldMapNode` — simple, costs 4 bytes/tile, and the
+        river walk can read it through `node_at`
+      - a separate float grid alongside the map — keeps nodes lean, but now two
+        structures must stay in step
+- [ ] Generate the height field from the existing `Lattice` sampling.
+- [ ] Render height directly as ASCII shading (e.g. ` .:-=+*#%@`) so the field is
+      visible on its own, before terrain is involved. Same reasoning as building
+      the renderer before the generator.
+
+## 3. Rivers
+
+- [ ] **Neighbour queries on `WorldMap`** — the downhill walk needs "what's next to
+      this tile, and is it on the map". Doesn't exist yet; `coord_inbounds` is the
+      building block. 4-way or 8-way is a real choice: 8-way gives more natural
+      diagonals, 4-way is simpler and rivers look blockier.
+- [ ] Pick a source: somewhere on the highest edge.
+- [ ] Walk downhill to the lowest neighbour, marking water, until reaching an edge
+      or the sea.
+- [ ] Handle the walk getting stuck in a local minimum (a pit with no lower
+      neighbour). Options: stop, form a lake, or fill the pit and continue.
+      This WILL happen with noise-generated terrain — worth deciding up front.
+
+## 4. Terrain from height (+ whatever else)
+
+- [ ] Replace the direct noise->terrain mapping with something driven by height,
+      distance to water, and possibly a second noise field (moisture).
+      Deliberately vague: decide once heights and rivers are visible.
+
+## 5. Better noise — deferred
+
+Value noise is sufficient until the above is working. Not worth the effort yet.
+
+- [ ] Smoothstep on the interpolation weight (`t*t*(3-2*t)`) — one line, removes
+      the visible creases along lattice lines. Cheapest possible improvement.
+- [ ] Multiple octaves (fBm): sum several lattices at doubling frequency and
+      halving amplitude. This is what makes terrain look like terrain.
+- [ ] Perlin noise (gradients at lattice points instead of values).
+- [ ] Simplex noise — mainly a win in 3D+; probably never needed here.
 
 ## Housekeeping (whenever)
+
 - [ ] Retire `src/game.cpp` (legacy demo) once nothing references it.
 - [ ] Drop `WorldMap::nodes()` — `node_at()` supersedes it, and it leaks the
       storage layout that `index()` exists to hide.
@@ -39,5 +80,7 @@ Ordered by dependency — each item unblocks the ones under it.
       are reference-only; delete when no longer useful.
 
 ## Parked
+
 - `TerrainInfo::colour` is unused until there's a real renderer.
 - Save/load will need stable terrain IDs — see the note about explicit enum values.
+- The -0.5 lattice offset. Try smoothstep first; it may be the whole problem.

@@ -2,6 +2,7 @@
 #include <cstdint>
 #include <string_view>
 #include "Colour.h"
+#include <cmath>
 
 enum class Terrain : uint8_t {
     Grass,
@@ -18,3 +19,4 @@ struct TerrainInfo {
 };
 
 const TerrainInfo& info(Terrain t);
+Terrain terrain_from_value(float value); 

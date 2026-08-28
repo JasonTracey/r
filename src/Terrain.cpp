@@ -27,3 +27,9 @@ const TerrainInfo& info(Terrain t) {
     
     return terrain_table[static_cast<uint8_t>(t)];
 }
+Terrain terrain_from_value(float value) {
+    int terrain_i = std::truncf(((value+1)/2) * static_cast<float>(Terrain::Count));
+    if (static_cast<Terrain>(terrain_i) == Terrain::Count) {
+        return static_cast<Terrain>(terrain_i-1);
+    }
+    return static_cast<Terrain>(terrain_i);} //this feels suuuuper messy REFACTOR?

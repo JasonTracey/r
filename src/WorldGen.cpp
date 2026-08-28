@@ -3,9 +3,8 @@
 #include "WorldMap.h"
 #include "WorldMapNode.h"
 #include "Terrain.h"
+#include "Lattice.h"
 #include <random>
-#include <iostream>
-
 
 void generate(WorldMap& w, unsigned int seed) {
     std::mt19937 generator(seed);
@@ -18,6 +17,19 @@ void generate(WorldMap& w, unsigned int seed) {
         for (int x = 0; x < w.width(); x++) {
             w.node_at({x, y}).set_terrain(
                 static_cast<Terrain>(distribution(generator))
+            );
+        }
+    }
+} 
+
+void generate_value(WorldMap& w, int spacing, unsigned int seed) {
+    Lattice lattice = Lattice(w,spacing,seed);
+    for (int y = 0; y < w.height(); y++) {
+        for (int x = 0; x < w.width(); x++) {
+            w.node_at({x, y}).set_terrain(
+                terrain_from_value(
+                    lattice.sample({x, y})
+                )
             );
         }
     }
