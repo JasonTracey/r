@@ -1,9 +1,10 @@
 #pragma once
-#include <vector>
 
-// pre
-class WorldMap;
+namespace world {
+    class Map;
 
-// generate function
-void generate(WorldMap& w, unsigned int seed = 42u);
-void generate_value(WorldMap& w, int spacing = 10, unsigned int seed = 1u);
+    // generate function
+    void generate(Map& w, unsigned int seed = 42u);
+    void generate_value(Map& w, int spacing = 10, unsigned int seed = 1u);
+    void generate_heightmap(Map& w, int spacing, unsigned int seed = 5u);
+}

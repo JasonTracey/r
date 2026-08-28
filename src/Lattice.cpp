@@ -1,7 +1,7 @@
 #include "Lattice.h"
-#include "WorldMap.h"
 #include <random>
 #include <cmath>
+#include <tuple>
 
 
 namespace {
@@ -24,15 +24,20 @@ namespace {
         float r2 = unit_lerp(tx, q[2], q[3]);
         return unit_lerp(ty, r1, r2);
     }
+    std::tuple<int, float> decompose_float (float f) {
+        float fi = std::floorf(f);
+        float ff = f-fi;
+        return {static_cast<int>(fi), ff};
+    }
     
 }
 
 //Public
-Lattice::Lattice(WorldMap& world, int spacing, unsigned int seed)
+Lattice::Lattice(int width, int height, int spacing, unsigned int seed)
     :
     spacing_(spacing),
-    width_(ceil_div(world.width(), spacing)+1),
-    height_(ceil_div(world.height(), spacing)+1),
+    width_(ceil_div(width, spacing)+1),
+    height_(ceil_div(height, spacing)+1),
     values_(width_*height_)
 {
     // not sure if this should be in construction
@@ -45,39 +50,32 @@ Lattice::Lattice(WorldMap& world, int spacing, unsigned int seed)
         values_[i] = distribution(generator);
     }
 }
-float Lattice::sample(Coord c) const {
-    Frac lcf_subgrid = world_to_lattice_subgrid(c);
+float Lattice::sample(world::GridPos wc) const {
+    Pos lp = world_to_lattice(wc);
     return unit_bilerp(
-        lcf_subgrid.x,
-        lcf_subgrid.y,
-        get_lattice_corners(c)
+        lp.frac.x,
+        lp.frac.y,
+        get_lattice_corners(lp.cell)
     );
 }
 
 
 //Private
-Lattice::PointF Lattice::world_to_lattice(Coord c) const {
-    return {
-        static_cast<float>(c.x)/spacing_,
-        static_cast<float>(c.y)/spacing_
-    };
+Lattice::Pos Lattice::world_to_lattice(world::GridPos wc) const {
+    Lattice::Pos lpos;
+    std::tie(
+        lpos.cell.x,
+        lpos.frac.x
+    ) = decompose_float(static_cast<float>(wc.x)/spacing_);
+    std::tie(
+        lpos.cell.y,
+        lpos.frac.y
+    ) = decompose_float(static_cast<float>(wc.y)/spacing_);
+    return lpos;
 }
-Lattice::Frac Lattice::world_to_lattice_subgrid(Coord c) const {
-    float x = static_cast<float>(c.x)/spacing_;
-    float y = static_cast<float>(c.y)/spacing_;
-    return {
-        x-std::floorf(x),
-        y-std::floorf(y)
-    };
 
-}
-std::array<float,4> Lattice::get_lattice_corners(Coord c) const {
+std::array<float,4> Lattice::get_lattice_corners(GridPos lc) const {
     std::array<float,4> corners;
-    PointF lcf = world_to_lattice(c);
-    Point lc = {
-        static_cast<int>(std::floorf(lcf.x)),
-        static_cast<int>(std::floorf(lcf.y))
-    };
     for (int dy = 0; dy < 2; dy++) {
         for (int dx = 0; dx < 2; dx++) {
             corners[dx+2*dy] = values_[

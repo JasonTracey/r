@@ -38,3 +38,16 @@ core verb from the very first minutes.
   a mechanic; shared is simpler.
 - Does a failed experiment consume the resources?
 - Can knowledge be lost (unit dies holding the only knowledge of knapping)?
+
+## Impassable terrain should be sparse
+
+Large bodies of water and other big impassable regions are boring: they consume
+map area and give nothing back. A river occupies very little space while doing
+much more work - it is a natural barrier, and a point of focus that settlement
+and movement organise themselves around.
+
+So: no sea, no large lakes, no mountain ranges as walls. Where impassable
+terrain exists it should be thin, sparse, and worth routing around or crossing.
+
+This is a general stance, not just a call about water - it applies to cliffs,
+ravines, dense forest, anything that blocks movement.

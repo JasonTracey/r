@@ -1,7 +1,7 @@
 CXX = g++
 CXXFLAGS = -I include -std=c++17 -Wall -Wextra -MMD -MP
 
-SRC = src/game2.cpp src/WorldMap.cpp src/WorldMapNode.cpp src/Terrain.cpp src/Render.cpp src/WorldGen.cpp src/Lattice.cpp
+SRC = src/game2.cpp src/Map.cpp src/MapNode.cpp src/Terrain.cpp src/Render.cpp src/WorldGen.cpp src/Lattice.cpp
 OBJ = $(SRC:src/%.cpp=build/%.o)
 DEP = $(OBJ:.o=.d)
 
